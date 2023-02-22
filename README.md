@@ -14,13 +14,17 @@
  `pip3 install werobot`
  
  安装 redis ,有宝塔的直接进软件管理页面安装redis,没有的使用以下一键安装
- ```mkdir -p /mydata/redis/conf
+ 
+ ``` 
+ mkdir -p /mydata/redis/conf
 touch /mydata/redis/conf/redis.conf
 docker run -p 6379:6379 --name redis \
 -v /mydata/redis/data:/data \
 -v /mydata/redis/conf/redis.conf:/etc/redis/redis.conf \
 -itd redis redis-server /etc/redis/redis.conf \
---appendonly yes```
+--appendonly yes
+
+```
 
 # 运行
  python3 wxchatbot.py
