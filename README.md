@@ -1,5 +1,5 @@
 # wxchatgpt
-chatgpt对接微信公众号
+及其简单的chatgpt对接微信公众号
 
 # 安装
 
