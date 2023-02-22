@@ -45,40 +45,42 @@ chatbot = Chatbot(config={
 #text 问题
 #把内容放入redis
 
-def getchatpgt(text):
+def getchatpgt(message):
     prev_text = ""
     for data in chatbot.ask(
-    text,
+    message.content,
     ):
-        message = data["message"][len(prev_text) :]
+        msg = data["message"][len(prev_text) :]
         #print(message, end="", flush=True)
         prev_text = data["message"]
     #print("结果:"+prev_text)
-    r.set('content',prev_text)
+    r.set(message.source,prev_text)
     return prev_text
 
 
 @robot.text
 def first(message, session):
     #检查之前是否提问过
-    if "chatgpt" in message.content and  r.get('content') != "":
-        content=r.get('content')
-        r.set('content',"")
+    if "chatgpt" in message.content and  r.get(message.source) != "":
+        content=r.get(message.source)
+        r.set(message.source,"")
+        #r.set('content',"")
         return content
     #发送chatgpt 直接返回
-    elif "chatgpt" in message.content and r.get('content')=="":
+    elif "chatgpt" in message.content and r.get(message.source)=="":
         return "你好！我就是 ChatGPT，一个由 OpenAI 训练的大型语言模型。有什么我可以帮助你的吗？"
 
-    p = multiprocessing.Process(target=getchatpgt,args=(message.content,))
+    p = multiprocessing.Process(target=getchatpgt,args=(message,))
     p.start()
     result = timeout_function(p, 4,session)  # 设置函数执行的时间限制为 4秒钟
     if 'success' in result:
+        #r.set(message.source,message.source)
         return '我正在思考,请等待15s左右输入chatgpt 获取问题答案'
     
         #session['content']=result
     #print('timeout_function结果：', result)
     #print('结果：', session['content'])
-    return r.get('content')
+    return r.get(message.source)
 if __name__ == '__main__':
     r = redis_conn()
     robot.run()
